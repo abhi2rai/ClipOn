@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Clip On!</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_card_layout">card_layout</string>
+
+    <color name="colorPrimary">#F44336</color>
+    <color name="colorPrimaryDark">#D32F2F</color>
+    <color name="colorAccent">#FF5252</color>
+    <color name="pressedState">#e5e5e5</color>
+    <color name="cardViewBackground">#ffffff</color>
+</resources>
