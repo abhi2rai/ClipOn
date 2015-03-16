@@ -16,12 +16,30 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.ClipboardViewHolder> {
 
     private List<Clipboard> clipboardList;
     private Context context;
+    private enum months
+    {
+        Jan,
+        Feb,
+        Mar,
+        Apr,
+        May,
+        Jun,
+        Jul,
+        Aug,
+        Sep,
+        Oct,
+        Nov,
+        Dec
+    }
 
     public ClipboardAdapter(List<Clipboard> clipboardList, Context context) {
         this.clipboardList = clipboardList;
@@ -38,7 +56,22 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
     public void onBindViewHolder(ClipboardViewHolder contactViewHolder, int i) {
         Clipboard ci = clipboardList.get(i);
         contactViewHolder.vCliptext.setText(ci.clipboardText);
-        contactViewHolder.vTimestamp.setText(ci.timestamp);
+        contactViewHolder.vTimestamp.setText(getFormattedDate(ci.timestamp));
+    }
+
+    private String getFormattedDate(String dateTime)
+    {
+        Date todaysDate = Calendar.getInstance().getTime();
+        String date;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if(sdf.format(todaysDate).equals(dateTime.split(" ")[0]))
+        {
+            date = "Today";
+        }else {
+            String[] dateArray = dateTime.split(" ")[0].split("-");
+            date = dateArray[2] + " " + months.values()[Integer.parseInt(dateArray[1]) - 1] + "," + dateArray[0].substring(2,4);
+        }
+        return date + "  " + dateTime.split(" ")[1].split(":")[0] + ":" + dateTime.split(" ")[1].split(":")[1];
     }
 
     @Override

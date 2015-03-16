@@ -3,15 +3,21 @@ package com.abc.klpt;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
+import android.view.Window;
+import android.view.WindowManager;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.List;
 
@@ -20,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
 
     RecyclerView recyclerView;
     ClipboardAdapter ca;
-    Switch serviceToggle;
+    SwitchCompat serviceToggle;
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
 
@@ -28,8 +34,14 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
 
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            setStatusBarColor("#512DA8");
+        }
+
+        sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
         if(!sharedpreferences.contains("enable"))
         {
             editor = sharedpreferences.edit();
@@ -61,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         final MenuItem item = menu.findItem(R.id.myswitch);
-        serviceToggle = (Switch)MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
+        serviceToggle = (SwitchCompat)MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
         if(sharedpreferences.contains("enable"))
         {
             if(sharedpreferences.getBoolean("enable",false))
@@ -88,6 +100,12 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         return true;
+    }
+
+    private void setStatusBarColor(String color){
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setStatusBarTintColor(Color.parseColor(color));
     }
 
     private List<Clipboard> createList() {
