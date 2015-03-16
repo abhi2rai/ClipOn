@@ -79,7 +79,6 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
                 sharingIntent.setType("text/plain");
                 sharingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,text);
-
                 Intent new_intent = Intent.createChooser(sharingIntent, "Share via");
                 new_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

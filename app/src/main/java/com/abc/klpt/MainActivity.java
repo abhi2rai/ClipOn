@@ -1,12 +1,17 @@
 package com.abc.klpt;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Switch;
 
 import java.util.List;
 
@@ -15,12 +20,23 @@ public class MainActivity extends ActionBarActivity {
 
     RecyclerView recyclerView;
     ClipboardAdapter ca;
+    Switch serviceToggle;
+    SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startService(new Intent(this, CBWatcherService.class));
+        sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
+
+        if(!sharedpreferences.contains("enable"))
+        {
+            editor = sharedpreferences.edit();
+            startService(new Intent(this, CBWatcherService.class));
+            editor.putBoolean("enable",true);
+            editor.apply();
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -44,22 +60,34 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        final MenuItem item = menu.findItem(R.id.myswitch);
+        serviceToggle = (Switch)MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
+        if(sharedpreferences.contains("enable"))
+        {
+            if(sharedpreferences.getBoolean("enable",false))
+            {
+                serviceToggle.setChecked(true);
+            }
+            else {
+                serviceToggle.setChecked(false);
+            }
         }
-
-        return super.onOptionsItemSelected(item);
+        MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor = sharedpreferences.edit();
+                if(serviceToggle.isChecked())
+                {
+                    startService(new Intent(getApplicationContext(), CBWatcherService.class));
+                    editor.putBoolean("enable",true);
+                }else {
+                    stopService(new Intent(getApplicationContext(), CBWatcherService.class));
+                    editor.putBoolean("enable",false);
+                }
+                editor.apply();
+            }
+        });
+        return true;
     }
 
     private List<Clipboard> createList() {

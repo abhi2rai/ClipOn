@@ -5,9 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_card_layout">card_layout</string>
 
-    <color name="colorPrimary">#F44336</color>
-    <color name="colorPrimaryDark">#D32F2F</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF5252</color>
-    <color name="pressedState">#e5e5e5</color>
+    <color name="pressedState">#C5CAE9</color>
     <color name="cardViewBackground">#ffffff</color>
 </resources>
