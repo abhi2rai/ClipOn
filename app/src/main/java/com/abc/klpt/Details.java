@@ -1,6 +1,7 @@
 package com.abc.klpt;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -21,8 +22,11 @@ public class Details extends ActionBarActivity {
         setContentView(R.layout.activity_details);
 
         detailText = (EditText) findViewById(R.id.detailText);
+        Typeface fontLight = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
+        detailText.setTypeface(fontLight);
         detailText.setMovementMethod(new ScrollingMovementMethod());
         detailText.setText(getIntent().getStringExtra("clipboardText"));
+
         if(getIntent().getStringExtra("clipboardText").length() < 12)
         {
             getSupportActionBar().setTitle(getIntent().getStringExtra("clipboardText"));
