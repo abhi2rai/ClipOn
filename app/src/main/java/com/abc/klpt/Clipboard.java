@@ -8,19 +8,24 @@ public class Clipboard {
     protected int id;
     protected String clipboardText;
     protected String timestamp;
-
+    protected boolean starred;
     public Clipboard() {
 
     }
 
-    public Clipboard(int id, String clipboardText, String timestamp) {
+    public Clipboard(int id, String clipboardText, boolean starred,String timestamp) {
         this.id = id;
         this.clipboardText = clipboardText;
         this.timestamp = timestamp;
+        this.starred = starred;
     }
 
     public int getId() {
         return this.id;
+    }
+
+    public boolean getStarred() {
+        return this.starred;
     }
 
     public String getClipboardText() {
@@ -33,6 +38,10 @@ public class Clipboard {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred = starred;
     }
 
     public void setClipboardText(String clipboardText) {

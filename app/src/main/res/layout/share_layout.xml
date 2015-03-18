@@ -4,13 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="horizontal" >
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/switchForActionBar"
+    <ImageButton
+        android:id="@+id/shareButton"
         android:layout_width="wrap_content"
-        android:textOn="ON"
-        android:textOff="OFF"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:background="@drawable/share_image_button"
+        android:src="@mipmap/share"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
-        <shape android:shape="oval" ><corners android:radius="15dip"></corners> <solid android:color="#E1BEE7"/> </shape>
+        <shape android:shape="oval" ><corners android:radius="15dip"></corners> <solid android:color="#CFD8DC"/> </shape>
     </item>
     <item android:drawable="@android:color/transparent"/>
 </selector>

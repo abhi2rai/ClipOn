@@ -3,21 +3,16 @@ package com.abc.klpt;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.List;
 
@@ -35,12 +30,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            Window w = getWindow();
-            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            setStatusBarColor("#512DA8");
-        }
-
         sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
         if(!sharedpreferences.contains("enable"))
         {
@@ -56,6 +45,9 @@ public class MainActivity extends ActionBarActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(llm);
+
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setHasFixedSize(true);
 
         ca = new ClipboardAdapter(createList(), getApplicationContext());
         recyclerView.setAdapter(ca);
@@ -100,12 +92,6 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         return true;
-    }
-
-    private void setStatusBarColor(String color){
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        tintManager.setStatusBarTintEnabled(true);
-        tintManager.setStatusBarTintColor(Color.parseColor(color));
     }
 
     private List<Clipboard> createList() {

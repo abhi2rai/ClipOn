@@ -20,6 +20,14 @@
         <service
             android:name=".CBWatcherService"
             android:enabled="true" />
+        <activity
+            android:name=".Details"
+            android:label="@string/title_activity_details"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.abc.klpt.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

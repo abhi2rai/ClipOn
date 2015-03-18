@@ -24,7 +24,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "create table clipboard " +
-                        "(id integer primary key autoincrement not null, cliptext text,timestamp default current_timestamp not null)"
+                        "(id integer primary key autoincrement not null, cliptext text,starred boolean default 0,timestamp default current_timestamp not null)"
         );
     }
 
@@ -49,16 +49,25 @@ public class DbHandler extends SQLiteOpenHelper {
                 new String[]{Integer.toString(id)});
     }
 
+    public void markAsStarred(int id, int starred)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String updateQuery = "update clipboard set starred="+starred+" where id="+id;
+        db.execSQL(updateQuery);
+        db.close();
+    }
+
     public List<Clipboard> getAllClipboard() {
         List<Clipboard> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select id,cliptext,datetime(timestamp, 'localtime') from clipboard order by timestamp desc", null);
+        Cursor res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard order by timestamp desc", null);
         if (res.moveToFirst()) {
             do {
                 Clipboard obj = new Clipboard();
                 obj.setId(res.getInt(0));
                 obj.setClipboardText(res.getString(1));
-                obj.setTimestamp(res.getString(2));
+                obj.setStarred(res.getInt(2)>0);
+                obj.setTimestamp(res.getString(3));
                 list.add(obj);
             } while (res.moveToNext());
         }
