@@ -26,12 +26,14 @@ public class DbHandler extends SQLiteOpenHelper {
                 "create table clipboard " +
                         "(id integer primary key autoincrement not null, cliptext text,starred boolean default 0,timestamp default current_timestamp not null)"
         );
+        db.close();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS clipboard");
         onCreate(db);
+        db.close();
     }
 
     public void addClipboardText(String text) {
@@ -71,6 +73,25 @@ public class DbHandler extends SQLiteOpenHelper {
                 list.add(obj);
             } while (res.moveToNext());
         }
+        db.close();
+        return list;
+    }
+
+    public List<Clipboard> getMarkedClips() {
+        List<Clipboard> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where starred=1 order by timestamp desc", null);
+        if (res.moveToFirst()) {
+            do {
+                Clipboard obj = new Clipboard();
+                obj.setId(res.getInt(0));
+                obj.setClipboardText(res.getString(1));
+                obj.setStarred(res.getInt(2)>0);
+                obj.setTimestamp(res.getString(3));
+                list.add(obj);
+            } while (res.moveToNext());
+        }
+        db.close();
         return list;
     }
 }

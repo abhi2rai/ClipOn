@@ -13,6 +13,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ToggleButton;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class MainActivity extends ActionBarActivity {
     RecyclerView recyclerView;
     ClipboardAdapter ca;
     SwitchCompat serviceToggle;
+    ToggleButton priorityToggle;
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
 
@@ -76,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
                 serviceToggle.setChecked(false);
             }
         }
+
         MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,11 +94,31 @@ public class MainActivity extends ActionBarActivity {
                 editor.apply();
             }
         });
+
+        priorityToggle = (ToggleButton)MenuItemCompat.getActionView(item).findViewById(R.id.priorityToggle);
+        MenuItemCompat.getActionView(item).findViewById(R.id.priorityToggle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(priorityToggle.isChecked())
+                {
+                    ca = new ClipboardAdapter(createPriorityList(), getApplicationContext());
+                    recyclerView.setAdapter(ca);
+                }else {
+                    ca = new ClipboardAdapter(createList(), getApplicationContext());
+                    recyclerView.setAdapter(ca);
+                }
+            }
+        });
         return true;
     }
 
     private List<Clipboard> createList() {
         DbHandler db = new DbHandler(getApplicationContext());
         return db.getAllClipboard();
+    }
+
+    private List<Clipboard> createPriorityList() {
+        DbHandler db = new DbHandler(getApplicationContext());
+        return db.getMarkedClips();
     }
 }

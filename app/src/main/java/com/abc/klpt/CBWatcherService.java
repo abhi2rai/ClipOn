@@ -4,12 +4,14 @@ package com.abc.klpt;
  * Created by abhishekrai on 3/13/15.
  */
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 public class CBWatcherService extends Service {
 
@@ -45,11 +47,16 @@ public class CBWatcherService extends Service {
     public void onDestroy() {
         super.onDestroy();
         UnRegPrimaryClipChanged();
+        stopForeground(true);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         RegPrimaryClipChanged();
+        Notification notification = new NotificationCompat.Builder(this)
+                .setContentTitle("Clip On!")
+                .setPriority(Notification.PRIORITY_MIN).build();
+        startForeground(7301,notification);
         return START_STICKY;
     }
 

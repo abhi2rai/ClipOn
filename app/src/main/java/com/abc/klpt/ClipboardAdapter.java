@@ -8,7 +8,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,12 +60,6 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
         contactViewHolder.vTimestamp.setText(getFormattedDate(ci.getTimestamp()));
         contactViewHolder.vStarred.setChecked(ci.getStarred());
         contactViewHolder.vStarred.setOnCheckedChangeListener(new CheckedChangeListener(ci.getId(),context));
-
-        Typeface fontReg = Typeface.createFromAsset(context.getAssets(), "fonts/RobotoCondensed-Regular.ttf");
-        contactViewHolder.vCliptext.setTypeface(fontReg);
-
-        Typeface fontLight = Typeface.createFromAsset(context.getAssets(), "fonts/RobotoCondensed-Light.ttf");
-        contactViewHolder.vTimestamp.setTypeface(fontLight);
     }
 
     private String getFormattedDate(String dateTime)
