@@ -32,6 +32,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.main_icon);
+        getSupportActionBar().setTitle("  " + "Click On!");
+
         sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
         if(!sharedpreferences.contains("enable"))
         {
@@ -86,10 +90,10 @@ public class MainActivity extends ActionBarActivity {
                 if(serviceToggle.isChecked())
                 {
                     startService(new Intent(getApplicationContext(), CBWatcherService.class));
-                    editor.putBoolean("enable",true);
+                    editor.putBoolean("enable", true);
                 }else {
                     stopService(new Intent(getApplicationContext(), CBWatcherService.class));
-                    editor.putBoolean("enable",false);
+                    editor.putBoolean("enable", false);
                 }
                 editor.apply();
             }

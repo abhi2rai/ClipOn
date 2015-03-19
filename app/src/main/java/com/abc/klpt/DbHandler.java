@@ -26,14 +26,12 @@ public class DbHandler extends SQLiteOpenHelper {
                 "create table clipboard " +
                         "(id integer primary key autoincrement not null, cliptext text,starred boolean default 0,timestamp default current_timestamp not null)"
         );
-        db.close();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS clipboard");
         onCreate(db);
-        db.close();
     }
 
     public void addClipboardText(String text) {

@@ -20,6 +20,9 @@ public class Details extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.edit_icon);
+
         detailText = (EditText) findViewById(R.id.detailText);
         detailText.setMovementMethod(new ScrollingMovementMethod());
         detailText.setText(getIntent().getStringExtra("clipboardText"));
@@ -27,9 +30,9 @@ public class Details extends ActionBarActivity {
 
         if(getIntent().getStringExtra("clipboardText").length() < 12)
         {
-            getSupportActionBar().setTitle(getIntent().getStringExtra("clipboardText"));
+            getSupportActionBar().setTitle("  " + getIntent().getStringExtra("clipboardText"));
         }else{
-            getSupportActionBar().setTitle(getIntent().getStringExtra("clipboardText").substring(0, 11) + "...");
+            getSupportActionBar().setTitle("  " + getIntent().getStringExtra("clipboardText").substring(0, 11) + "...");
         }
     }
 
