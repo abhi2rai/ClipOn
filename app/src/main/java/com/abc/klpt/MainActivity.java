@@ -9,11 +9,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ToggleButton;
+
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.List;
 
@@ -26,6 +29,8 @@ public class MainActivity extends ActionBarActivity {
     ToggleButton priorityToggle;
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
+    FloatingActionButton fab;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,8 @@ public class MainActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.main_icon);
-        getSupportActionBar().setTitle("  " + "Click On!");
+        getSupportActionBar().setTitle("  " + "Clip On!");
+
 
         sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
         if(!sharedpreferences.contains("enable"))
@@ -57,6 +63,16 @@ public class MainActivity extends ActionBarActivity {
 
         ca = new ClipboardAdapter(createList(), getApplicationContext());
         recyclerView.setAdapter(ca);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToRecyclerView(recyclerView);
+    }
+
+    public void addNewEntry(View v)
+    {
+        Intent intent = new Intent(this, Details.class);
+        intent.putExtra("mode", "add");
+        startActivity(intent);
     }
 
     @Override
@@ -82,6 +98,22 @@ public class MainActivity extends ActionBarActivity {
                 serviceToggle.setChecked(false);
             }
         }
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ca = new ClipboardAdapter(getSearchString(newText,priorityToggle.isChecked()), getApplicationContext());
+                recyclerView.setAdapter(ca);
+                return false;
+            }
+        });
+
 
         MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +151,14 @@ public class MainActivity extends ActionBarActivity {
     private List<Clipboard> createList() {
         DbHandler db = new DbHandler(getApplicationContext());
         return db.getAllClipboard();
+    }
+
+    private List<Clipboard> getSearchString(String text,boolean starred) {
+        DbHandler db = new DbHandler(getApplicationContext());
+        int flag =0;
+        if(starred)
+            flag = 1;
+        return db.getQuery(text,flag);
     }
 
     private List<Clipboard> createPriorityList() {

@@ -75,6 +75,28 @@ public class DbHandler extends SQLiteOpenHelper {
         return list;
     }
 
+    public List<Clipboard> getQuery(String text,int starred) {
+        List<Clipboard> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res;
+        if(starred == 1)
+            res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' and starred="+starred+" order by timestamp desc", null);
+        else
+            res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' order by timestamp desc", null);
+        if (res.moveToFirst()) {
+            do {
+                Clipboard obj = new Clipboard();
+                obj.setId(res.getInt(0));
+                obj.setClipboardText(res.getString(1));
+                obj.setStarred(res.getInt(2)>0);
+                obj.setTimestamp(res.getString(3));
+                list.add(obj);
+            } while (res.moveToNext());
+        }
+        db.close();
+        return list;
+    }
+
     public List<Clipboard> getMarkedClips() {
         List<Clipboard> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

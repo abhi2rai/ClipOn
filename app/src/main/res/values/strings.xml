@@ -4,6 +4,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_card_layout">card_layout</string>
+    <string name="addButton">Add</string>
+    <string name="editHint">Add a new entry</string>
+    <string name="saveButton">Save</string>
+
     <color name="pressedState">#EA80FC</color>
     <color name="cardViewBackground">#ffffff</color>
     <string name="title_activity_details">details</string>
