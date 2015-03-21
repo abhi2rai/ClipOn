@@ -8,6 +8,8 @@
         android:id="@+id/shareButton"
         android:layout_width="wrap_content"
         android:background="@drawable/share_image_button"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:src="@mipmap/share"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"

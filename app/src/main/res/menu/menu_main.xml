@@ -6,6 +6,11 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/star_item"
+        android:title=""
+        android:icon="@mipmap/ic_toggle_star_outline"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/myswitch"
         android:title=""
         app:showAsAction="ifRoom"

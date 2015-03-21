@@ -14,7 +14,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ToggleButton;
 
 import com.melnykov.fab.FloatingActionButton;
 
@@ -26,11 +25,12 @@ public class MainActivity extends ActionBarActivity {
     RecyclerView recyclerView;
     ClipboardAdapter ca;
     SwitchCompat serviceToggle;
-    ToggleButton priorityToggle;
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
     FloatingActionButton fab;
     SearchView searchView;
+    boolean starMode = false;
+    MenuItem starItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +87,8 @@ public class MainActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         final MenuItem item = menu.findItem(R.id.myswitch);
+        starItem = menu.findItem(R.id.star_item);
+
         serviceToggle = (SwitchCompat)MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
         if(sharedpreferences.contains("enable"))
         {
@@ -108,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ca = new ClipboardAdapter(getSearchString(newText,priorityToggle.isChecked()), getApplicationContext());
+                ca = new ClipboardAdapter(getSearchString(newText,starMode), getApplicationContext());
                 recyclerView.setAdapter(ca);
                 return false;
             }
@@ -130,22 +132,33 @@ public class MainActivity extends ActionBarActivity {
                 editor.apply();
             }
         });
+        return true;
+    }
 
-        priorityToggle = (ToggleButton)MenuItemCompat.getActionView(item).findViewById(R.id.priorityToggle);
-        MenuItemCompat.getActionView(item).findViewById(R.id.priorityToggle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(priorityToggle.isChecked())
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_search:
+                return super.onOptionsItemSelected(item);
+            case R.id.star_item:
+                starMode = !starMode;
+                if(starMode)
                 {
+                    starItem.setIcon(R.mipmap.ic_toggle_star);
                     ca = new ClipboardAdapter(createPriorityList(), getApplicationContext());
                     recyclerView.setAdapter(ca);
                 }else {
+                    starItem.setIcon(R.mipmap.ic_toggle_star_outline);
                     ca = new ClipboardAdapter(createList(), getApplicationContext());
                     recyclerView.setAdapter(ca);
                 }
-            }
-        });
-        return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private List<Clipboard> createList() {
