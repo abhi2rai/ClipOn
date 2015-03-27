@@ -1,5 +1,6 @@
 package com.abc.klpt;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,9 +12,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SwitchCompat;
+import android.text.Html;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
 
@@ -41,6 +45,7 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setIcon(R.mipmap.main_icon);
         getSupportActionBar().setTitle("  " + "Clip On!");
 
+        checkFirstRun();
 
         sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
         if(!sharedpreferences.contains("enable"))
@@ -66,6 +71,35 @@ public class MainActivity extends ActionBarActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
+    }
+
+    public void checkFirstRun() {
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+        if (isFirstRun){
+            String str = "<p>To see your clipboard data - copy anything on your android device's clipboard" +
+                    " or you can add your own data too by tapping on the floating + icon.</p>" +
+                    "You can perform the following operations" +
+                    " on your clipboard data:<br/>" +
+                    "&#8226; Star mark your data<br/>" +
+                    "&#8226; View your star marked data<br/>"+
+                    "&#8226; Add your own data<br/>" +
+                    "&#8226; String based search<br/>";
+
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Welcome!")
+                    .setMessage(Html.fromHtml(str))
+                    .setNeutralButton("OK", null).show();
+
+            TextView messageText = (TextView)dialog.findViewById(android.R.id.message);
+            messageText.setGravity(Gravity.CENTER);
+
+            dialog.show();
+
+            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("isFirstRun", false)
+                    .apply();
+        }
     }
 
     public void addNewEntry(View v)
