@@ -3,11 +3,13 @@ package com.abc.klpt;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,10 +31,11 @@ public class Details extends ActionBarActivity {
         detailText = (EditText) findViewById(R.id.detailText);
         detailText.setMovementMethod(new ScrollingMovementMethod());
 
+        ViewCompat.setTransitionName(getWindow().getDecorView().findViewById(android.R.id.content),"defaultAnimation");
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         if(getIntent().hasExtra("clipboardText"))
         {
             detailText.setText(getIntent().getStringExtra("clipboardText"));
-            detailText.setSelection(detailText.getText().length());
             if(getIntent().getStringExtra("clipboardText").length() < 12)
             {
                 getSupportActionBar().setTitle("  " + getIntent().getStringExtra("clipboardText"));

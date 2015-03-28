@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -66,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
 
-        ca = new ClipboardAdapter(createList(), getApplicationContext());
+        ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
         recyclerView.setAdapter(ca);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -106,13 +108,15 @@ public class MainActivity extends ActionBarActivity {
     {
         Intent intent = new Intent(this, Details.class);
         intent.putExtra("mode", "add");
-        startActivity(intent);
+        ActivityOptionsCompat options =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,fab,"defaultAnimation");
+        ActivityCompat.startActivity(MainActivity.this, intent, options.toBundle());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ca = new ClipboardAdapter(createList(), getApplicationContext());
+        ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
         recyclerView.setAdapter(ca);
     }
 
@@ -144,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ca = new ClipboardAdapter(getSearchString(newText,starMode), getApplicationContext());
+                ca = new ClipboardAdapter(getSearchString(newText,starMode), getApplicationContext(),MainActivity.this);
                 recyclerView.setAdapter(ca);
                 return false;
             }
@@ -184,11 +188,11 @@ public class MainActivity extends ActionBarActivity {
                 if(starMode)
                 {
                     starItem.setIcon(R.mipmap.ic_toggle_star);
-                    ca = new ClipboardAdapter(createPriorityList(), getApplicationContext());
+                    ca = new ClipboardAdapter(createPriorityList(), getApplicationContext(),MainActivity.this);
                     recyclerView.setAdapter(ca);
                 }else {
                     starItem.setIcon(R.mipmap.ic_toggle_star_outline);
-                    ca = new ClipboardAdapter(createList(), getApplicationContext());
+                    ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
                     recyclerView.setAdapter(ca);
                 }
         }

@@ -4,10 +4,13 @@ package com.abc.klpt;
  * Created by abhishekrai on 3/14/15.
  */
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +28,7 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
 
     private List<Clipboard> clipboardList;
     private Context context;
+    private Activity activity;
 
     private enum months
     {
@@ -42,9 +46,10 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
         Dec
     }
 
-    public ClipboardAdapter(List<Clipboard> clipboardList, Context context) {
+    public ClipboardAdapter(List<Clipboard> clipboardList, Context context,Activity activity) {
         this.clipboardList = clipboardList;
         this.context = context;
+        this.activity = activity;
     }
 
 
@@ -112,7 +117,10 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
                 Intent intent = new Intent(context, Details.class);
                 intent.putExtra("clipboardText", text);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+
+                ActivityOptionsCompat options =
+                        ActivityOptionsCompat.makeCustomAnimation(context,R.anim.abc_slide_in_bottom,R.anim.abc_slide_out_bottom);
+                ActivityCompat.startActivity(activity, intent, options.toBundle());
             }
         });
 
