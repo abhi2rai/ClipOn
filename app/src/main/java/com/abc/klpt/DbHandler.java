@@ -57,6 +57,14 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void updateRecord(int id, String text)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String updateQuery = "update clipboard set cliptext='"+text+"' where id="+id;
+        db.execSQL(updateQuery);
+        db.close();
+    }
+
     public List<Clipboard> getAllClipboard() {
         List<Clipboard> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

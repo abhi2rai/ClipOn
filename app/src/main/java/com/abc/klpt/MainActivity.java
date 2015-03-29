@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,7 +47,7 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.main_icon);
         getSupportActionBar().setTitle("  " + "Clip On!");
-
+        ViewCompat.setTransitionName(getWindow().getDecorView().findViewById(android.R.id.content), "defaultAnimation");
         checkFirstRun();
 
         sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
@@ -109,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this, Details.class);
         intent.putExtra("mode", "add");
         ActivityOptionsCompat options =
-                ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,fab,"defaultAnimation");
+                ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, fab, "defaultAnimation");
         ActivityCompat.startActivity(MainActivity.this, intent, options.toBundle());
     }
 

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,12 +60,42 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
     }
 
     @Override
-    public void onBindViewHolder(ClipboardViewHolder contactViewHolder, int i) {
-        Clipboard ci = clipboardList.get(i);
+    public void onBindViewHolder(final ClipboardViewHolder contactViewHolder, int i) {
+        final Clipboard ci = clipboardList.get(i);
         contactViewHolder.vCliptext.setText(ci.getClipboardText());
         contactViewHolder.vTimestamp.setText(getFormattedDate(ci.getTimestamp()));
         contactViewHolder.vStarred.setChecked(ci.getStarred());
-        contactViewHolder.vStarred.setOnCheckedChangeListener(new CheckedChangeListener(ci.getId(),context));
+
+        contactViewHolder.vStarred.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DbHandler db = new DbHandler(context);
+                final int starred;
+                if(!clipboardList.get(clipboardList.indexOf(ci)).getStarred()) {
+                    starred = 1;
+                    contactViewHolder.vStarred.setChecked(true);
+                }
+                else {
+                    starred = 0;
+                    contactViewHolder.vStarred.setChecked(false);
+                }
+                db.markAsStarred(ci.getId(),starred);
+                clipboardList.get(clipboardList.indexOf(ci)).setStarred(starred == 1);
+            }
+        });
+
+        contactViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(context, Details.class);
+                intent.putExtra("clipboardText", ci.getClipboardText());
+                intent.putExtra("mode", "edit");
+                intent.putExtra("id", ci.getId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ActivityOptionsCompat options =
+                        ActivityOptionsCompat.makeCustomAnimation(context, R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+                ActivityCompat.startActivity(activity, intent, options.toBundle());
+            }
+        });
     }
 
     private String getFormattedDate(String dateTime)
@@ -110,20 +141,6 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
             }
         });
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                TextView textView = (TextView) itemView.findViewById(R.id.clipText);
-                String text = textView.getText().toString();
-                Intent intent = new Intent(context, Details.class);
-                intent.putExtra("clipboardText", text);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeCustomAnimation(context,R.anim.abc_slide_in_bottom,R.anim.abc_slide_out_bottom);
-                ActivityCompat.startActivity(activity, intent, options.toBundle());
-            }
-        });
-
         return new ClipboardViewHolder(itemView);
     }
 
@@ -131,12 +148,14 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
         protected TextView vCliptext;
         protected TextView vTimestamp;
         protected CheckBox vStarred;
+        protected CardView cardView;
 
         public ClipboardViewHolder(View v) {
             super(v);
             vCliptext = (TextView) v.findViewById(R.id.clipText);
             vTimestamp = (TextView) v.findViewById(R.id.timeStamp);
             vStarred = (CheckBox) v.findViewById(R.id.starred);
+            cardView = (CardView)v;
         }
     }
 }

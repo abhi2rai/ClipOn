@@ -38,14 +38,14 @@
             android:layout_toRightOf="@+id/starred"
             android:layout_toEndOf="@+id/starred"
             android:gravity="center_vertical"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="@color/secondary_text"
             android:paddingBottom="8dp"
             android:layout_toRightOf="@+id/starred"

@@ -2,6 +2,8 @@ package com.abc.klpt;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -28,11 +30,13 @@ public class Details extends ActionBarActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.edit_icon);
 
+        addButton = (Button)findViewById(R.id.saveButton);
+
         detailText = (EditText) findViewById(R.id.detailText);
         detailText.setMovementMethod(new ScrollingMovementMethod());
 
         ViewCompat.setTransitionName(getWindow().getDecorView().findViewById(android.R.id.content),"defaultAnimation");
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         if(getIntent().hasExtra("clipboardText"))
         {
             detailText.setText(getIntent().getStringExtra("clipboardText"));
@@ -42,15 +46,18 @@ public class Details extends ActionBarActivity {
             }else{
                 getSupportActionBar().setTitle("  " + getIntent().getStringExtra("clipboardText").substring(0, 11) + "...");
             }
+            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }else{
             getSupportActionBar().setTitle("Add");
         }
 
         if(!getIntent().hasExtra("mode"))
         {
-            addButton = (Button)findViewById(R.id.saveButton);
             addButton.setEnabled(false);
             addButton.setVisibility(View.INVISIBLE);
+        }else if(getIntent().getStringExtra("mode").equals("edit"))
+        {
+            addButton.setText("SAVE");
         }
     }
 
@@ -59,14 +66,23 @@ public class Details extends ActionBarActivity {
         DbHandler db = new DbHandler(this);
         detailText = (EditText) findViewById(R.id.detailText);
         String text = detailText.getText().toString();
-        if(!text.equals(""))
+        if(text.equals("")) {
+            Toast.makeText(this, "Please enter some text", Toast.LENGTH_SHORT).show();
+        }else if(!getIntent().getStringExtra("mode").equals("edit"))
         {
             db.addClipboardText(text);
-            Toast.makeText(this, "Added", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }else{
-            Toast.makeText(this, "Please enter some text", Toast.LENGTH_SHORT).show();
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeCustomAnimation(this, R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+            ActivityCompat.startActivity(this, intent, options.toBundle());
+            Toast.makeText(this, "Added", Toast.LENGTH_LONG).show();
+        }else if(getIntent().getStringExtra("mode").equals("edit")) {
+            db.updateRecord(getIntent().getIntExtra("id", -1), text);
+            Intent intent = new Intent(this, MainActivity.class);
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeCustomAnimation(this, R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+            ActivityCompat.startActivity(this, intent, options.toBundle());
+            Toast.makeText(this, "Updated", Toast.LENGTH_LONG).show();
         }
     }
 
