@@ -156,6 +156,14 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
         return new ClipboardViewHolder(itemView);
     }
 
+    public void remove(int position) {
+        if (position == -1) return;
+        DbHandler db = new DbHandler(context);
+        db.deleteClipboardText(clipboardList.get(position).getId());
+        clipboardList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public static class ClipboardViewHolder extends RecyclerView.ViewHolder {
         protected TextView vCliptext;
         protected TextView vTimestamp;

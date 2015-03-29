@@ -74,6 +74,30 @@ public class MainActivity extends ActionBarActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
+
+        SwipeableRecyclerViewTouchListener swipeDeleteTouchListener =
+                new SwipeableRecyclerViewTouchListener(
+                        recyclerView,
+                        new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                            @Override
+                            public boolean canSwipe(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                for (int position : reverseSortedPositions) {
+                                    ca.remove(position);
+                                }
+                                ca.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
+                            }
+                        });
+        recyclerView.addOnItemTouchListener(swipeDeleteTouchListener);
     }
 
     public void checkFirstRun() {
