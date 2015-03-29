@@ -156,12 +156,31 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
         return new ClipboardViewHolder(itemView);
     }
 
-    public void remove(int position) {
+    public void removeFromList(int position) {
         if (position == -1) return;
-        DbHandler db = new DbHandler(context);
-        db.deleteClipboardText(clipboardList.get(position).getId());
         clipboardList.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public Clipboard getObjectAt(int position)
+    {
+        return clipboardList.get(position);
+    }
+
+    public int getObjectAt(Clipboard obj)
+    {
+        return clipboardList.indexOf(obj);
+    }
+
+    public void addToList(int position,Clipboard obj) {
+        if (position == -1) return;
+        clipboardList.add(position,obj);
+        notifyItemInserted(position);
+    }
+
+    public void removeFromDb(Clipboard obj) {
+        DbHandler db = new DbHandler(context);
+        db.deleteClipboardText(obj.getId());
     }
 
     public static class ClipboardViewHolder extends RecyclerView.ViewHolder {

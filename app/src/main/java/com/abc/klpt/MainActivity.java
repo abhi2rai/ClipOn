@@ -23,6 +23,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.ActionClickListener;
+import com.nispok.snackbar.listeners.EventListener;
 
 import java.util.List;
 
@@ -57,6 +61,10 @@ public class MainActivity extends ActionBarActivity {
             startService(new Intent(this, CBWatcherService.class));
             editor.putBoolean("enable",true);
             editor.apply();
+        }else if(sharedpreferences.getBoolean("enable",false))
+        {
+            stopService(new Intent(getApplicationContext(), CBWatcherService.class));
+            startService(new Intent(this, CBWatcherService.class));
         }
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -87,7 +95,8 @@ public class MainActivity extends ActionBarActivity {
                             @Override
                             public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
                                 for (int position : reverseSortedPositions) {
-                                    ca.remove(position);
+                                    showUndoBar(position,ca.getObjectAt(position));
+                                    ca.removeFromList(position);
                                 }
                                 ca.notifyDataSetChanged();
                             }
@@ -100,7 +109,54 @@ public class MainActivity extends ActionBarActivity {
         recyclerView.addOnItemTouchListener(swipeDeleteTouchListener);
     }
 
-    public void checkFirstRun() {
+    private void showUndoBar(final int position, final Clipboard obj)
+    {
+        SnackbarManager.show(
+                Snackbar.with(getApplicationContext())
+                        .text("1 deleted")
+                        .actionLabel("UNDO")
+                        .actionColor(getResources().getColor(R.color.accent))
+                        .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
+                        .eventListener(new EventListener() {
+                            @Override
+                            public void onShow(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onShowByReplace(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onDismiss(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissByReplace(Snackbar snackbar) {
+
+                            }
+
+                            @Override
+                            public void onDismissed(Snackbar snackbar) {
+                                if(ca.getObjectAt(obj) == -1)
+                                    ca.removeFromDb(obj);
+                            }
+                        })
+                        .actionListener(new ActionClickListener() {
+                            @Override
+                            public void onActionClicked(Snackbar snackbar) {
+                                ca.addToList(position,obj);
+                            }
+                        }), MainActivity.this);
+    }
+
+    private void checkFirstRun() {
         boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
         if (isFirstRun){
             String str = "<p>To see your clipboard data - copy anything on your android device's clipboard" +
