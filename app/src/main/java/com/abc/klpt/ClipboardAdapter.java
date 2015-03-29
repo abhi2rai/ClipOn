@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +67,16 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
         contactViewHolder.vCliptext.setText(ci.getClipboardText());
         contactViewHolder.vTimestamp.setText(getFormattedDate(ci.getTimestamp()));
         contactViewHolder.vStarred.setChecked(ci.getStarred());
+
+        if (Build.VERSION_CODES.LOLLIPOP != Build.VERSION.SDK_INT) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            int verticalMargin = (int)(contactViewHolder.cardView.getMaxCardElevation() + (0.474 * contactViewHolder.cardView.getRadius()));
+            int horizontalMargin = (int)((contactViewHolder.cardView.getMaxCardElevation()*1.5) + (0.474 * contactViewHolder.cardView.getRadius()));
+            params.setMargins(-horizontalMargin, -verticalMargin, -horizontalMargin,
+                    -verticalMargin);
+            contactViewHolder.cardView.setLayoutParams(params);
+        }
 
         contactViewHolder.vStarred.setOnClickListener(new View.OnClickListener() {
             @Override
