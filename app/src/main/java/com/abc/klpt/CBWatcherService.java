@@ -12,6 +12,7 @@ import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 public class CBWatcherService extends Service {
 
@@ -66,20 +67,24 @@ public class CBWatcherService extends Service {
     }
 
     private void performClipboardCheck() {
-        DbHandler db = new DbHandler(getApplicationContext());
-        ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (cb.hasPrimaryClip()) {
-            ClipData cd = cb.getPrimaryClip();
-            try {
-                if (mPreviousText.equals(cd.getItemAt(0).getText().toString())) return;
-                else {
-                    String clipboardText = cd.getItemAt(0).getText().toString();
-                    db.addClipboardText(clipboardText);
-                    mPreviousText = clipboardText;
+        try{
+            DbHandler db = new DbHandler(getApplicationContext());
+            ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            if (cb.hasPrimaryClip()) {
+                ClipData cd = cb.getPrimaryClip();
+                try {
+                    if (mPreviousText.equals(cd.getItemAt(0).getText().toString())) return;
+                    else {
+                        String clipboardText = cd.getItemAt(0).getText().toString();
+                        db.addClipboardText(clipboardText);
+                        mPreviousText = clipboardText;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        }catch (Exception ex){
+            Log.e("Error while adding :",ex.getMessage());
         }
     }
 }

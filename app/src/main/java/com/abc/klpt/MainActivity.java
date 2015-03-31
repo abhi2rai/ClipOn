@@ -1,5 +1,6 @@
 package com.abc.klpt;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,21 +53,35 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.main_icon);
         getSupportActionBar().setTitle("  " + "Clip On!");
+
         ViewCompat.setTransitionName(getWindow().getDecorView().findViewById(android.R.id.content), "defaultAnimation");
         checkFirstRun();
-
-        sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
-        if(!sharedpreferences.contains("enable"))
-        {
-            editor = sharedpreferences.edit();
-            startService(new Intent(this, CBWatcherService.class));
-            editor.putBoolean("enable",true);
-            editor.apply();
-        }else if(sharedpreferences.getBoolean("enable",false))
-        {
-            stopService(new Intent(getApplicationContext(), CBWatcherService.class));
-            startService(new Intent(this, CBWatcherService.class));
+        try {
+            sharedpreferences = getSharedPreferences("kltp", Context.MODE_PRIVATE);
+            if(!sharedpreferences.contains("enable"))
+            {
+                editor = sharedpreferences.edit();
+                startService(new Intent(this, CBWatcherService.class));
+                editor.putBoolean("enable",true);
+                editor.apply();
+            }else if(sharedpreferences.getBoolean("enable",false))
+            {
+                boolean serviceActive = false;
+                ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+                {
+                    if ("com.abc.klpt.CBWatcherService".equals(service.service.getClassName()))
+                    {
+                        serviceActive = true;
+                    }
+                }
+                if(!serviceActive)
+                    startService(new Intent(this, CBWatcherService.class));
+            }
+        }catch (Exception ex){
+            Log.e("Error while starting :",ex.getMessage());
         }
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -120,17 +136,17 @@ public class MainActivity extends ActionBarActivity {
                         .eventListener(new EventListener() {
                             @Override
                             public void onShow(Snackbar snackbar) {
-
+                                starItem.setVisible(false);
+                                searchView.setVisibility(View.INVISIBLE);
+                                fab.hide(true);
                             }
 
                             @Override
                             public void onShowByReplace(Snackbar snackbar) {
-
                             }
 
                             @Override
                             public void onShown(Snackbar snackbar) {
-
                             }
 
                             @Override
@@ -139,13 +155,15 @@ public class MainActivity extends ActionBarActivity {
 
                             @Override
                             public void onDismissByReplace(Snackbar snackbar) {
-
                             }
 
                             @Override
                             public void onDismissed(Snackbar snackbar) {
+                                fab.show(true);
                                 if(ca.getObjectAt(obj) == -1)
                                     ca.removeFromDb(obj);
+                                starItem.setVisible(true);
+                                searchView.setVisibility(View.VISIBLE);
                             }
                         })
                         .actionListener(new ActionClickListener() {
@@ -208,7 +226,7 @@ public class MainActivity extends ActionBarActivity {
         final MenuItem item = menu.findItem(R.id.myswitch);
         starItem = menu.findItem(R.id.star_item);
 
-        serviceToggle = (SwitchCompat)MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
+        serviceToggle = (SwitchCompat) MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
         if(sharedpreferences.contains("enable"))
         {
             if(sharedpreferences.getBoolean("enable",false))
@@ -229,7 +247,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ca = new ClipboardAdapter(getSearchString(newText,starMode), getApplicationContext(),MainActivity.this);
+                ca = new ClipboardAdapter(getSearchString(newText, starMode), getApplicationContext(),MainActivity.this);
                 recyclerView.setAdapter(ca);
                 return false;
             }

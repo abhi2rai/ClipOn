@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,91 +36,124 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     public void addClipboardText(String text) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("cliptext", text);
-        db.insert("clipboard", null, contentValues);
-        db.close();
+        try{
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("cliptext", text);
+            db.insert("clipboard", null, contentValues);
+            db.close();
+        }catch (Exception ex)
+        {
+            Log.e("Error insert: ",ex.getMessage());
+        }
+
     }
 
     public int deleteClipboardText(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete("clipboard",
-                "id = ? ",
-                new String[]{Integer.toString(id)});
+        try{
+            SQLiteDatabase db = this.getWritableDatabase();
+            return db.delete("clipboard",
+                    "id = ? ",
+                    new String[]{Integer.toString(id)});
+        }catch (Exception ex){
+            Log.e("Error deleting:",ex.getMessage());
+        }
+        return 0;
     }
 
     public void markAsStarred(int id, int starred)
     {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String updateQuery = "update clipboard set starred="+starred+" where id="+id;
-        db.execSQL(updateQuery);
-        db.close();
+        try{
+            SQLiteDatabase db = this.getWritableDatabase();
+            String updateQuery = "update clipboard set starred="+starred+" where id="+id;
+            db.execSQL(updateQuery);
+            db.close();
+        }catch (Exception ex){
+            Log.e("Error marking:",ex.getMessage());
+        }
     }
 
     public void updateRecord(int id, String text)
     {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String updateQuery = "update clipboard set cliptext='"+text+"' where id="+id;
-        db.execSQL(updateQuery);
-        db.close();
+        try{
+            SQLiteDatabase db = this.getWritableDatabase();
+            String updateQuery = "update clipboard set cliptext='"+text+"' where id="+id;
+            db.execSQL(updateQuery);
+            db.close();
+        }catch (Exception ex){
+            Log.e("Error updating:",ex.getMessage());
+        }
     }
 
     public List<Clipboard> getAllClipboard() {
         List<Clipboard> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard order by timestamp desc", null);
-        if (res.moveToFirst()) {
-            do {
-                Clipboard obj = new Clipboard();
-                obj.setId(res.getInt(0));
-                obj.setClipboardText(res.getString(1));
-                obj.setStarred(res.getInt(2)>0);
-                obj.setTimestamp(res.getString(3));
-                list.add(obj);
-            } while (res.moveToNext());
+        try{
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard order by timestamp desc", null);
+            if (res.moveToFirst()) {
+                do {
+                    Clipboard obj = new Clipboard();
+                    obj.setId(res.getInt(0));
+                    obj.setClipboardText(res.getString(1));
+                    obj.setStarred(res.getInt(2)>0);
+                    obj.setTimestamp(res.getString(3));
+                    list.add(obj);
+                } while (res.moveToNext());
+            }
+            db.close();
+        }catch (Exception ex)
+        {
+            Log.e("Error fetching:",ex.getMessage());
         }
-        db.close();
+
         return list;
     }
 
     public List<Clipboard> getQuery(String text,int starred) {
         List<Clipboard> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res;
-        if(starred == 1)
-            res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' and starred="+starred+" order by timestamp desc", null);
-        else
-            res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' order by timestamp desc", null);
-        if (res.moveToFirst()) {
-            do {
-                Clipboard obj = new Clipboard();
-                obj.setId(res.getInt(0));
-                obj.setClipboardText(res.getString(1));
-                obj.setStarred(res.getInt(2)>0);
-                obj.setTimestamp(res.getString(3));
-                list.add(obj);
-            } while (res.moveToNext());
+        try{
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor res;
+            if(starred == 1)
+                res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' and starred="+starred+" order by timestamp desc", null);
+            else
+                res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' order by timestamp desc", null);
+            if (res.moveToFirst()) {
+                do {
+                    Clipboard obj = new Clipboard();
+                    obj.setId(res.getInt(0));
+                    obj.setClipboardText(res.getString(1));
+                    obj.setStarred(res.getInt(2)>0);
+                    obj.setTimestamp(res.getString(3));
+                    list.add(obj);
+                } while (res.moveToNext());
+            }
+            db.close();
+        }catch (Exception ex){
+            Log.e("Error querying:",ex.getMessage());
         }
-        db.close();
         return list;
     }
 
     public List<Clipboard> getMarkedClips() {
         List<Clipboard> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where starred=1 order by timestamp desc", null);
-        if (res.moveToFirst()) {
-            do {
-                Clipboard obj = new Clipboard();
-                obj.setId(res.getInt(0));
-                obj.setClipboardText(res.getString(1));
-                obj.setStarred(res.getInt(2)>0);
-                obj.setTimestamp(res.getString(3));
-                list.add(obj);
-            } while (res.moveToNext());
+        try{
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where starred=1 order by timestamp desc", null);
+            if (res.moveToFirst()) {
+                do {
+                    Clipboard obj = new Clipboard();
+                    obj.setId(res.getInt(0));
+                    obj.setClipboardText(res.getString(1));
+                    obj.setStarred(res.getInt(2)>0);
+                    obj.setTimestamp(res.getString(3));
+                    list.add(obj);
+                } while (res.moveToNext());
+            }
+            db.close();
+        }catch (Exception ex){
+            Log.e("Error marked list",ex.getMessage());
         }
-        db.close();
         return list;
     }
 }
