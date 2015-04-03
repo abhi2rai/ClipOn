@@ -7,6 +7,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,8 +28,8 @@ public class Details extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.edit_icon);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
+        mToolbar.setNavigationIcon(R.mipmap.edit_icon);
 
         addButton = (Button)findViewById(R.id.saveButton);
 
@@ -42,14 +43,15 @@ public class Details extends ActionBarActivity {
             detailText.setText(getIntent().getStringExtra("clipboardText"));
             if(getIntent().getStringExtra("clipboardText").length() < 12)
             {
-                getSupportActionBar().setTitle("  " + getIntent().getStringExtra("clipboardText"));
+                mToolbar.setTitle(getIntent().getStringExtra("clipboardText"));
             }else{
-                getSupportActionBar().setTitle("  " + getIntent().getStringExtra("clipboardText").substring(0, 11) + "...");
+                mToolbar.setTitle(getIntent().getStringExtra("clipboardText").substring(0, 11) + "...");
             }
             this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }else{
-            getSupportActionBar().setTitle("Add");
+            mToolbar.setTitle("Add");
         }
+        setSupportActionBar(mToolbar);
 
         if(!getIntent().hasExtra("mode"))
         {

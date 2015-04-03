@@ -9,5 +9,14 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:textColorPrimary">@color/primary_text</item>
         <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="toolbarStyle">@style/Widget.Toolbar</item>
+    </style>
+
+    <style name="Widget.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 </resources>

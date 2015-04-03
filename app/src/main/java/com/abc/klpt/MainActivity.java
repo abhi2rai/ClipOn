@@ -16,15 +16,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ToggleDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
@@ -44,15 +54,53 @@ public class MainActivity extends ActionBarActivity {
     SearchView searchView;
     boolean starMode = false;
     MenuItem starItem;
+    Drawer.Result result;
+    Toolbar mToolbar;
+    ToggleDrawerItem toggleDrawerItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.main_icon);
-        getSupportActionBar().setTitle("  " + "Clip On!");
+        mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
+        mToolbar.setTitle("All");
+        mToolbar.setNavigationIcon(R.mipmap.main_icon);
+        setSupportActionBar(mToolbar);
+
+        AccountHeader.Result headerResult = new AccountHeader()
+                .withActivity(this)
+                .withCompactStyle(true)
+                .withHeaderBackground(R.color.primary)
+                .withProfileImagesClickable(false)
+                .withSelectionListEnabledForSingleProfile(false)
+                .addProfiles(
+                        new ProfileDrawerItem().withName("Clip On!").withEmail("Clipboard Manager").withIcon(getResources().getDrawable(R.mipmap.main_icon))
+                )
+                .build();
+        toggleDrawerItem = new ToggleDrawerItem().withName("Clipboard Service").withIcon(R.layout.switch_layout);
+        result = new Drawer()
+                .withActivity(this)
+                .withToolbar(mToolbar)
+                .withDisplayBelowToolbar(true)
+                .withActionBarDrawerToggleAnimated(true)
+                .withDrawerGravity(Gravity.START | Gravity.LEFT)
+                .withAccountHeader(headerResult)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName("All").withIcon(R.mipmap.ic_launcher),
+                        new PrimaryDrawerItem().withName("Starred").withIcon(R.mipmap.ic_launcher),
+                        new PrimaryDrawerItem().withName("Unstarred").withIcon(R.mipmap.ic_launcher),
+                        new DividerDrawerItem(),
+                        toggleDrawerItem
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        setListOnActivityStart(position);
+                    }
+                })
+                .build();
 
         ViewCompat.setTransitionName(getWindow().getDecorView().findViewById(android.R.id.content), "defaultAnimation");
         checkFirstRun();
@@ -81,6 +129,33 @@ public class MainActivity extends ActionBarActivity {
         }catch (Exception ex){
             Log.e("Error while starting :",ex.getMessage());
         }
+
+        if(sharedpreferences.contains("enable"))
+        {
+            if(sharedpreferences.getBoolean("enable",false))
+            {
+                toggleDrawerItem.setChecked(true);
+            }
+            else {
+                toggleDrawerItem.setChecked(false);
+            }
+        }
+
+        toggleDrawerItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor = sharedpreferences.edit();
+                if(isChecked)
+                {
+                    startService(new Intent(getApplicationContext(), CBWatcherService.class));
+                    editor.putBoolean("enable", true);
+                }else {
+                    stopService(new Intent(getApplicationContext(), CBWatcherService.class));
+                    editor.putBoolean("enable", false);
+                }
+                editor.apply();
+            }
+        });
 
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -123,6 +198,19 @@ public class MainActivity extends ActionBarActivity {
                             }
                         });
         recyclerView.addOnItemTouchListener(swipeDeleteTouchListener);
+    }
+
+    private void setListOnActivityStart(int position){
+        if(position == 1)
+        {
+            mToolbar.setTitle("Starred");
+            ca = new ClipboardAdapter(createPriorityList(), getApplicationContext(),MainActivity.this);
+            recyclerView.setAdapter(ca);
+        }else if(position == 0){
+            mToolbar.setTitle("All");
+            ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
+            recyclerView.setAdapter(ca);
+        }
     }
 
     private void showUndoBar(final int position, final Clipboard obj)
@@ -215,8 +303,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
-        recyclerView.setAdapter(ca);
+        setListOnActivityStart(result.getCurrentSelection());
     }
 
     @Override
@@ -232,9 +319,11 @@ public class MainActivity extends ActionBarActivity {
             if(sharedpreferences.getBoolean("enable",false))
             {
                 serviceToggle.setChecked(true);
+                toggleDrawerItem.setChecked(true);
             }
             else {
                 serviceToggle.setChecked(false);
+                toggleDrawerItem.setChecked(false);
             }
         }
         final MenuItem searchItem = menu.findItem(R.id.action_search);

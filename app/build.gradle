@@ -26,4 +26,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.+'
     compile 'com.nispok:snackbar:2.10.6'
     compile 'com.melnykov:floatingactionbutton:1.2.0'
+    compile('com.mikepenz.materialdrawer:library:2.6.9@aar') {
+        transitive = true
+    }
 }
