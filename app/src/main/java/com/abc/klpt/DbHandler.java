@@ -115,9 +115,11 @@ public class DbHandler extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor res;
             if(starred == 1)
-                res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' and starred="+starred+" order by timestamp desc", null);
-            else
+                res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' and starred=1 order by timestamp desc", null);
+            else if(starred == 0)
                 res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' order by timestamp desc", null);
+            else
+                res = db.rawQuery("select id,cliptext,starred,datetime(timestamp, 'localtime') from clipboard where cliptext like '%"+text+"%' and starred=0 order by timestamp desc", null);
             if (res.moveToFirst()) {
                 do {
                     Clipboard obj = new Clipboard();

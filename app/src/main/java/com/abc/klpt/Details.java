@@ -29,7 +29,6 @@ public class Details extends ActionBarActivity {
         setContentView(R.layout.activity_details);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
-        mToolbar.setNavigationIcon(R.mipmap.edit_icon);
 
         addButton = (Button)findViewById(R.id.saveButton);
 
@@ -61,6 +60,8 @@ public class Details extends ActionBarActivity {
         {
             addButton.setText("SAVE");
         }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void saveNewEntry(View v)
@@ -80,10 +81,7 @@ public class Details extends ActionBarActivity {
             Toast.makeText(this, "Added", Toast.LENGTH_LONG).show();
         }else if(getIntent().getStringExtra("mode").equals("edit")) {
             db.updateRecord(getIntent().getIntExtra("id", -1), text);
-            Intent intent = new Intent(this, MainActivity.class);
-            ActivityOptionsCompat options =
-                    ActivityOptionsCompat.makeCustomAnimation(this, R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
-            ActivityCompat.startActivity(this, intent, options.toBundle());
+            finish();
             Toast.makeText(this, "Updated", Toast.LENGTH_LONG).show();
         }
     }
@@ -109,5 +107,16 @@ public class Details extends ActionBarActivity {
             }
         });
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

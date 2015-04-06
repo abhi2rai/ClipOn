@@ -30,6 +30,9 @@ MERGED from com.android.support:support-v4:22.0.0:22:5
 MERGED from com.melnykov:floatingactionbutton:1.2.0:12:5
 MERGED from com.android.support:recyclerview-v7:22.0.0:22:5
 MERGED from com.android.support:support-v4:22.0.0:22:5
+MERGED from com.android.support:appcompat-v7:22.0.0:22:5
+MERGED from com.android.support:support-v4:22.0.0:22:5
+MERGED from com.android.support:support-v4:22.0.0:22:5
 	android:label
 		ADDED from AndroidManifest.xml:8:9
 	android:allowBackup
@@ -100,6 +103,11 @@ MERGED from com.android.support:recyclerview-v7:22.0.0:20:5
 MERGED from com.android.support:support-v4:22.0.0:20:5
 MERGED from com.melnykov:floatingactionbutton:1.2.0:8:5
 MERGED from com.android.support:recyclerview-v7:22.0.0:20:5
+MERGED from com.android.support:support-v4:22.0.0:20:5
+MERGED from com.mikepenz.materialdrawer:library:2.6.9:8:5
+MERGED from com.mikepenz.iconics:library:0.8.4:8:5
+MERGED from com.android.support:appcompat-v7:22.0.0:20:5
+MERGED from com.android.support:support-v4:22.0.0:20:5
 MERGED from com.android.support:support-v4:22.0.0:20:5
 	android:targetSdkVersion
 		INJECTED from AndroidManifest.xml:0:0

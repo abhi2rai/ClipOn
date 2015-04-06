@@ -15,7 +15,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -33,7 +32,7 @@ import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.ToggleDrawerItem;
+import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -47,16 +46,14 @@ public class MainActivity extends ActionBarActivity {
 
     RecyclerView recyclerView;
     ClipboardAdapter ca;
-    SwitchCompat serviceToggle;
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
     FloatingActionButton fab;
     SearchView searchView;
-    boolean starMode = false;
-    MenuItem starItem;
+    int searchMode = 0;
     Drawer.Result result;
     Toolbar mToolbar;
-    ToggleDrawerItem toggleDrawerItem;
+    SwitchDrawerItem toggleDrawerItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,39 +62,50 @@ public class MainActivity extends ActionBarActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
         mToolbar.setTitle("All");
-        mToolbar.setNavigationIcon(R.mipmap.main_icon);
         setSupportActionBar(mToolbar);
 
         AccountHeader.Result headerResult = new AccountHeader()
                 .withActivity(this)
                 .withCompactStyle(true)
-                .withHeaderBackground(R.color.primary)
+                .withHeaderBackground(R.drawable.header_image)
                 .withProfileImagesClickable(false)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Clip On!").withEmail("Clipboard Manager").withIcon(getResources().getDrawable(R.mipmap.main_icon))
+                        new ProfileDrawerItem().withName("Clip On!").withEmail("Clipboard Manager").withIcon(getResources().getDrawable(R.mipmap.ic_header_icon))
                 )
                 .build();
-        toggleDrawerItem = new ToggleDrawerItem().withName("Clipboard Service").withIcon(R.layout.switch_layout);
+
+        toggleDrawerItem = new SwitchDrawerItem().withName("Clipboard Service");
         result = new Drawer()
                 .withActivity(this)
                 .withToolbar(mToolbar)
                 .withDisplayBelowToolbar(true)
+                .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggleAnimated(true)
                 .withDrawerGravity(Gravity.START | Gravity.LEFT)
                 .withAccountHeader(headerResult)
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View view) {
+                        searchView.onActionViewCollapsed();
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View view) {
+
+                    }
+                })
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("All").withIcon(R.mipmap.ic_launcher),
-                        new PrimaryDrawerItem().withName("Starred").withIcon(R.mipmap.ic_launcher),
-                        new PrimaryDrawerItem().withName("Unstarred").withIcon(R.mipmap.ic_launcher),
+                        new PrimaryDrawerItem().withName("All").withIcon(R.mipmap.ic_all_items),
+                        new PrimaryDrawerItem().withName("Starred").withIcon(R.mipmap.ic_starred_items),
                         new DividerDrawerItem(),
                         toggleDrawerItem
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
                         setListOnActivityStart(position);
+                        searchMode = position;
                     }
                 })
                 .build();
@@ -224,7 +232,6 @@ public class MainActivity extends ActionBarActivity {
                         .eventListener(new EventListener() {
                             @Override
                             public void onShow(Snackbar snackbar) {
-                                starItem.setVisible(false);
                                 searchView.setVisibility(View.INVISIBLE);
                                 fab.hide(true);
                             }
@@ -250,7 +257,6 @@ public class MainActivity extends ActionBarActivity {
                                 fab.show(true);
                                 if(ca.getObjectAt(obj) == -1)
                                     ca.removeFromDb(obj);
-                                starItem.setVisible(true);
                                 searchView.setVisibility(View.VISIBLE);
                             }
                         })
@@ -310,22 +316,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        final MenuItem item = menu.findItem(R.id.myswitch);
-        starItem = menu.findItem(R.id.star_item);
 
-        serviceToggle = (SwitchCompat) MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar);
-        if(sharedpreferences.contains("enable"))
-        {
-            if(sharedpreferences.getBoolean("enable",false))
-            {
-                serviceToggle.setChecked(true);
-                toggleDrawerItem.setChecked(true);
-            }
-            else {
-                serviceToggle.setChecked(false);
-                toggleDrawerItem.setChecked(false);
-            }
-        }
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -336,28 +327,12 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ca = new ClipboardAdapter(getSearchString(newText, starMode), getApplicationContext(),MainActivity.this);
+                ca = new ClipboardAdapter(getSearchString(newText, searchMode), getApplicationContext(),MainActivity.this);
                 recyclerView.setAdapter(ca);
                 return false;
             }
         });
 
-
-        MenuItemCompat.getActionView(item).findViewById(R.id.switchForActionBar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editor = sharedpreferences.edit();
-                if(serviceToggle.isChecked())
-                {
-                    startService(new Intent(getApplicationContext(), CBWatcherService.class));
-                    editor.putBoolean("enable", true);
-                }else {
-                    stopService(new Intent(getApplicationContext(), CBWatcherService.class));
-                    editor.putBoolean("enable", false);
-                }
-                editor.apply();
-            }
-        });
         return true;
     }
 
@@ -371,18 +346,6 @@ public class MainActivity extends ActionBarActivity {
         switch (id) {
             case R.id.action_search:
                 return super.onOptionsItemSelected(item);
-            case R.id.star_item:
-                starMode = !starMode;
-                if(starMode)
-                {
-                    starItem.setIcon(R.mipmap.ic_toggle_star);
-                    ca = new ClipboardAdapter(createPriorityList(), getApplicationContext(),MainActivity.this);
-                    recyclerView.setAdapter(ca);
-                }else {
-                    starItem.setIcon(R.mipmap.ic_toggle_star_outline);
-                    ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
-                    recyclerView.setAdapter(ca);
-                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -392,12 +355,10 @@ public class MainActivity extends ActionBarActivity {
         return db.getAllClipboard();
     }
 
-    private List<Clipboard> getSearchString(String text,boolean starred) {
+    private List<Clipboard> getSearchString(String text,int option) {
         DbHandler db = new DbHandler(getApplicationContext());
-        int flag =0;
-        if(starred)
-            flag = 1;
-        return db.getQuery(text,flag);
+
+        return db.getQuery(text,option);
     }
 
     private List<Clipboard> createPriorityList() {
