@@ -60,6 +60,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
         mToolbar.setTitle("All");
         setSupportActionBar(mToolbar);
@@ -79,7 +80,6 @@ public class MainActivity extends ActionBarActivity {
         result = new Drawer()
                 .withActivity(this)
                 .withToolbar(mToolbar)
-                .withDisplayBelowToolbar(true)
                 .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggleAnimated(true)
                 .withDrawerGravity(Gravity.START | Gravity.LEFT)
@@ -98,6 +98,8 @@ public class MainActivity extends ActionBarActivity {
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("All").withIcon(R.mipmap.ic_all_items),
                         new PrimaryDrawerItem().withName("Starred").withIcon(R.mipmap.ic_starred_items),
+                        new PrimaryDrawerItem().withName("Links").withIcon(R.mipmap.ic_content_link),
+                        new PrimaryDrawerItem().withName("Notes").withIcon(R.mipmap.ic_action_notes),
                         new DividerDrawerItem(),
                         toggleDrawerItem
                 )
@@ -217,6 +219,14 @@ public class MainActivity extends ActionBarActivity {
         }else if(position == 0){
             mToolbar.setTitle("All");
             ca = new ClipboardAdapter(createList(), getApplicationContext(),MainActivity.this);
+            recyclerView.setAdapter(ca);
+        }else if(position == 2){
+            mToolbar.setTitle("Links");
+            ca = new ClipboardAdapter(createLinksList(), getApplicationContext(),MainActivity.this);
+            recyclerView.setAdapter(ca);
+        }else if(position == 3){
+            mToolbar.setTitle("Notes");
+            ca = new ClipboardAdapter(createNotesList(), getApplicationContext(),MainActivity.this);
             recyclerView.setAdapter(ca);
         }
     }
@@ -357,12 +367,21 @@ public class MainActivity extends ActionBarActivity {
 
     private List<Clipboard> getSearchString(String text,int option) {
         DbHandler db = new DbHandler(getApplicationContext());
-
         return db.getQuery(text,option);
     }
 
     private List<Clipboard> createPriorityList() {
         DbHandler db = new DbHandler(getApplicationContext());
         return db.getMarkedClips();
+    }
+
+    private List<Clipboard> createLinksList() {
+        DbHandler db = new DbHandler(getApplicationContext());
+        return db.getLinkClips();
+    }
+
+    private List<Clipboard> createNotesList() {
+        DbHandler db = new DbHandler(getApplicationContext());
+        return db.getNoteClips();
     }
 }

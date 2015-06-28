@@ -76,7 +76,7 @@ public class Details extends ActionBarActivity {
             db.addClipboardText(text);
             Intent intent = new Intent(this, MainActivity.class);
             ActivityOptionsCompat options =
-                    ActivityOptionsCompat.makeCustomAnimation(this, R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+                    ActivityOptionsCompat.makeCustomAnimation(this, R.anim.abc_fade_in, R.anim.abc_fade_out);
             ActivityCompat.startActivity(this, intent, options.toBundle());
             Toast.makeText(this, "Added", Toast.LENGTH_LONG).show();
         }else if(getIntent().getStringExtra("mode").equals("edit")) {
@@ -103,6 +103,9 @@ public class Details extends ActionBarActivity {
                     sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,text);
                     Intent new_intent = Intent.createChooser(sharingIntent, "Share via");
                     startActivity(new_intent);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Please enter some text", Toast.LENGTH_SHORT).show();
                 }
             }
         });

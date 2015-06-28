@@ -24,6 +24,8 @@
         android:textColor="@color/primary_text"
         android:textSize="20sp"
         android:scrollbars="vertical"
+        android:linksClickable="true"
+        android:autoLink="web|email"
         android:layout_height="wrap_content" />
 
     <Button android:id="@+id/saveButton"

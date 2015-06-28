@@ -104,7 +104,7 @@ public class ClipboardAdapter extends RecyclerView.Adapter<ClipboardAdapter.Clip
                 intent.putExtra("id", ci.getId());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeCustomAnimation(context, R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+                        ActivityOptionsCompat.makeCustomAnimation(context, R.anim.abc_fade_in, R.anim.abc_fade_out);
                 ActivityCompat.startActivity(activity, intent, options.toBundle());
             }
         });
